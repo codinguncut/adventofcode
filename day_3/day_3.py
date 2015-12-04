@@ -4,6 +4,7 @@ from collections import Counter, deque
 
 def singleMove((x, y), char):
     """
+    evaluate single move
     >>> singleMove((1, 2), '>')
     (2, 2)
     >>> singleMove((1, 2), 'a')
@@ -11,10 +12,10 @@ def singleMove((x, y), char):
     ...
     AssertionError
     """
-    dirs = {'>': (x+1, y),
-            '<': (x-1, y),
-            '^': (x, y-1),
-            'v': (x, y+1)}
+    dirs = {'>': (x+1,  y),
+            '<': (x-1,  y),
+            '^': (x,    y-1),
+            'v': (x,    y+1)}
     assert char in dirs 
     return dirs[char]
 
@@ -32,13 +33,13 @@ def moveSanta(directions):
     return Counter(reduce(scan, directions, [(0, 0)]))
 
 
-def multiplePresents(directions):
+def housesVisited(directions):
     """
-    >>> multiplePresents('>')
+    >>> housesVisited('>')
     2
-    >>> multiplePresents('^>v<')
+    >>> housesVisited('^>v<')
     4
-    >>> multiplePresents('^v^v^v^v^v')
+    >>> housesVisited('^v^v^v^v^v')
     2
     """
     return len(moveSanta(directions))
@@ -68,7 +69,7 @@ if __name__ == "__main__":
     doctest.testmod()
 
     directions = readFile('input.txt')
-    print '3_1', multiplePresents(directions)
-    print '3_2', alternating(directions)
+    print 'santa', housesVisited(directions)
+    print 'alternating', alternating(directions)
     
 
