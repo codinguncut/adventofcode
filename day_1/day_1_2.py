@@ -12,6 +12,5 @@ parens = sys.stdin.read().strip()
 scan = reduce(consume, parens, [0])
 aboveGround = list(it.takewhile(lambda x: x>=0, scan))
 
-print scan
 print 'final floor: ', scan[-1], ', entering basement: ', len(aboveGround)
 
