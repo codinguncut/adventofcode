@@ -25,14 +25,17 @@ def f(i):
 
 def searchPostfix(zeroes=5):
     """
-     searchPostfix('pqrstuv')
+        searchPostfix('pqrstuv')
     1048970
     """
-    pool = Pool(4)
+    # TODO: pool does not finish with imap with large chunksize ;(
+    pool = Pool()
     hashes = pool.imap(f, it.count(), chunksize=1000)
     rex = re.compile(r'^0{'+str(zeroes)+r'}')
     for i, h in hashes:
         if rex.match(h):
+            #pool.close()
+            #pool.join()
             return i
 
 
@@ -42,3 +45,4 @@ if __name__ == "__main__":
 
     print '5 zeroes', searchPostfix(5)
     print '6 zeroes', searchPostfix(6)
+

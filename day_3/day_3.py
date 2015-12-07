@@ -1,36 +1,33 @@
 #!/usr/bin/env python
 
-from collections import Counter, deque
+def scan(f, it, state):
+  yield state 
+  for x in it:
+    state = f(state, x)
+    yield state
+
 
 def singleMove((x, y), char):
     """
     evaluate single move
     >>> singleMove((1, 2), '>')
     (2, 2)
-    >>> singleMove((1, 2), 'a')
-    Traceback (most recent call last):
-    ...
-    AssertionError
     """
     dirs = {'>': (x+1,  y),
             '<': (x-1,  y),
             '^': (x,    y-1),
             'v': (x,    y+1)}
-    assert char in dirs 
     return dirs[char]
 
 
 def moveSanta(directions):
     """
     >>> moveSanta('>')
-    Counter({(1, 0): 1, (0, 0): 1})
+    set([(1, 0), (0, 0)])
     >>> moveSanta('^v^v^v^v^v')
-    Counter({(0, 0): 6, (0, -1): 5})
+    set([(0, -1), (0, 0)])
     """
-    def scan(lst, d):
-        return lst + [singleMove(lst[-1], d)]
-
-    return Counter(reduce(scan, directions, [(0, 0)]))
+    return set(scan(singleMove, directions, (0, 0)))
 
 
 def housesVisited(directions):
@@ -56,7 +53,7 @@ def alternating(directions):
     """
     santa = directions[0::2]
     robot = directions[1::2]
-    return len(moveSanta(santa) + moveSanta(robot))
+    return len(moveSanta(santa) | moveSanta(robot))
 
 
 def readFile(filename):
