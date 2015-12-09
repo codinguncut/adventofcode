@@ -37,8 +37,9 @@ def enteringBasement(ops):
     return levels(ops).index(-1)
 
 
-ops = sys.stdin.read().strip()
-print 'final floor:', lastFloor(ops), ', entering basement:', enteringBasement(ops)
+with open('input.txt', 'r') as f:
+    ops = f.read()
+    print 'final floor:', lastFloor(ops), ', entering basement:', enteringBasement(ops)
 
 
 def correct():
