@@ -6,6 +6,9 @@ def scan(f, it, state):
     yield state
 
 
+###
+
+
 def consume(level, paren):
     ops = { '(': 1,
             ')': -1}

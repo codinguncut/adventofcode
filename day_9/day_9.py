@@ -66,7 +66,7 @@ def distances(strings):
     segss = ((p, segment(p)) for p in paths)
 
     pool = Pool()
-    # for very large paht lengths, we probably will need to use "imap" again
+    # for very large path lengths, we probably will need to use "imap" again
     ds = pool.map(CalcDist(lookup), segss)
     return ds
 

@@ -6,6 +6,9 @@ def scan(f, it, state):
     yield state
 
 
+###
+
+
 def singleMove((x, y), char):
     """
     evaluate single move

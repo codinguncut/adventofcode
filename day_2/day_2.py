@@ -24,7 +24,7 @@ def getRibbonLength(l, w, h):
     >>> getRibbonLength(1, 1, 10)
     14
     """
-    perimeters = [2*(l+h), 2*(l+w), 2*(h+w)]
+    perimeters = [2*(l+w), 2*(l+h), 2*(w+h)]
     smallestPerim = min(perimeters)
     volume = l*w*h
     bowLength = volume

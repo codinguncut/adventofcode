@@ -49,6 +49,7 @@ class Matcher(object):
     def __init__(self, prefix, zeroes):
         self.prefix = prefix
         self.rex = re.compile(r'^0{'+str(zeroes)+r'}')
+
     def __call__(self, i):
         h = getMd5(self.prefix + str(i))
         return (i, bool(self.rex.match(h)))
