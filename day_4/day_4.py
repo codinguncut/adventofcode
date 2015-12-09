@@ -21,32 +21,41 @@ def getMd5(string):
     return md5.new(string).hexdigest()
 
 
-# pool needs global function, not sure how best to pass prefix in...
-def f(i):
-    prefix = 'iwrupvqb'
-    return (i, getMd5(prefix + str(i)))
+# function class for Pool.map
+class Matcher(object):
+    def __init__(self, prefix, zeroes):
+        self.prefix = prefix
+        self.rex = re.compile(r'^0{'+str(zeroes)+r'}')
+    def __call__(self, i):
+        h = getMd5(self.prefix + str(i))
+        return (i, bool(self.rex.match(h)))
 
 
-def searchPostfix(zeroes=5):
+def searchPostfix(prefix, zeroes=5):
     """
-        searchPostfix('pqrstuv')
+    >>> searchPostfix('pqrstuv')
     1048970
     """
-    # TODO: pool does not finish with imap with large chunksize ;(
     pool = Pool()
-    hashes = pool.imap(f, it.count(), chunksize=1000)
-    rex = re.compile(r'^0{'+str(zeroes)+r'}')
-    for i, h in hashes:
-        if rex.match(h):
-            #pool.close()
-            #pool.join()
-            return i
+    chunksize = 10000
+    
+    # TODO: Pool.imap would be infinitely more elegant,
+    #   but unfortunately it is very broken ;(
+    # NOTE: might use a generator to hide the chunk plumbing
+    nums = it.count(1)
+    while True:
+        seg = list(it.islice(nums, chunksize))
+        matches = pool.map(Matcher(prefix, zeroes), seg)
+        filtered = filter(lambda (x, b): b, matches)
+        if filtered:
+            return filtered[0][0]
 
 
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
 
-    print '5 zeroes', searchPostfix(5)
-    print '6 zeroes', searchPostfix(6)
+    prefix = 'iwrupvqb'
+    print '5 zeroes', searchPostfix(prefix, 5)
+    print '6 zeroes', searchPostfix(prefix, 6)
 

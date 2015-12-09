@@ -60,7 +60,7 @@ def distances(strings):
     [605, 605, 659, 659, 982, 982]
     """
     lookup = getLookup(strings)
-    cities = set(k[0] for k in lookup.keys())
+    cities = set(a for a,b in lookup.keys())
 
     paths = it.permutations(cities)
     segss = [(p, segment(p)) for p in paths]
@@ -75,6 +75,6 @@ if __name__ == "__main__":
     doctest.testmod()
 
     dists = distances(readFile('input.txt'))
-    print 'part 1:', min(d[1] for d in dists)
-    print 'part 2:', max(d[1] for d in dists)
+    print 'part 1:', min(d for p,d in dists)
+    print 'part 2:', max(d for p,d in dists)
 
