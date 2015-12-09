@@ -3,9 +3,9 @@
 """
 lots of optimization possible:
 - use proper graph library (shortest path, travelling salesman)
-- split into and cache/memoize subpaths (i.e. of length 2**n)
-- only calculate where p[0] < p[-1], and use reverse for inverse path
-- operate on one-hot encoding rather than full string (faster hash?)
+- split into and cache/memoize subpaths (i.e. of length 2^n)
+- only calculate paths where p[0] < p[-1], and use reverse for inverse path
+- operate on one-hot int encoding rather than full string (faster hash?)
 """
 
 import re
@@ -18,8 +18,8 @@ def parse(string):
     >>> parse('London to Dublin = 464')
     (('London', 'Dublin'), 464)
     """
-    fro, to, dist = re.match(r'(\w+) to (\w+) = (\d+)', string).groups()
-    return ((fro, to), int(dist))
+    start, end, dist = re.match(r'(\w+) to (\w+) = (\d+)', string).groups()
+    return ((start, end), int(dist))
 
 
 def getLookup(strings):
@@ -29,8 +29,7 @@ def getLookup(strings):
     """
     tups = [parse(s) for s in strings]
     ds = [[(tup, dist), (tuple(reversed(tup)), dist)] for (tup, dist) in tups]
-    lookup = dict(sum(ds, []))
-    return lookup
+    return dict(sum(ds, []))
 
 
 def segment(path):
@@ -50,6 +49,7 @@ def readFile(filename):
 class CalcDist(object):
     def __init__(self, lookup):
         self.lookup = lookup
+
     def __call__(self, (path, segs)):
         return (path, sum(self.lookup[s] for s in segs))
 
@@ -60,12 +60,13 @@ def distances(strings):
     [605, 605, 659, 659, 982, 982]
     """
     lookup = getLookup(strings)
-    cities = set(a for a,b in lookup.keys())
+    cities = set(a for a,_ in lookup.keys())
 
     paths = it.permutations(cities)
-    segss = [(p, segment(p)) for p in paths]
+    segss = ((p, segment(p)) for p in paths)
 
     pool = Pool()
+    # for very large paht lengths, we probably will need to use "imap" again
     ds = pool.map(CalcDist(lookup), segss)
     return ds
 
@@ -75,6 +76,6 @@ if __name__ == "__main__":
     doctest.testmod()
 
     dists = distances(readFile('input.txt'))
-    print 'part 1:', min(d for p,d in dists)
-    print 'part 2:', max(d for p,d in dists)
+    print 'part 1:', min(d for _,d in dists)
+    print 'part 2:', max(d for _,d in dists)
 

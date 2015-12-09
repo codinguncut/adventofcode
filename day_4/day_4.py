@@ -9,18 +9,6 @@ import re
 import itertools as it
 from multiprocessing import Pool
 
-
-# deprecated, use hashlib
-def getMd5(string):
-    """
-    >>> getMd5('abcdef609043')[:11]
-    '000001dbbfa'
-    >>> getMd5('pqrstuv1048970')[:11]
-    '000006136ef'
-    """
-    return md5.new(string).hexdigest()
-
-
 # TODO: Pool.imap would be infinitely more elegant,
 #   but unfortunately it is very broken ;(
 def imap(func, iterable, chunksize=10000):
@@ -40,7 +28,23 @@ def imap(func, iterable, chunksize=10000):
     return chain(helper())
 
 
-# function class for Pool.map
+###
+
+
+# deprecated, use hashlib
+def getMd5(string):
+    """
+    >>> getMd5('abcdef609043')[:11]
+    '000001dbbfa'
+    >>> getMd5('pqrstuv1048970')[:11]
+    '000006136ef'
+    """
+    return md5.new(string).hexdigest()
+
+
+
+# function class for calling from Pool.map
+# in python 3 we could use "partial"
 class Matcher(object):
     def __init__(self, prefix, zeroes):
         self.prefix = prefix
@@ -56,7 +60,7 @@ def searchPostfix(prefix, zeroes=5):
     1048970
     """
     matches = imap(Matcher(prefix, zeroes), it.count())
-    filtered = it.dropwhile(lambda (x, b): not b, matches)
+    filtered = it.ifilter(lambda (_, b): b, matches)
     return filtered.next()[0]
 
 

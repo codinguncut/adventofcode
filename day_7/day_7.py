@@ -63,8 +63,7 @@ def expression(lookup, parts):
     
 def fileToLookup(filename):
     with open(filename, 'r') as f:
-        lines = f.readlines()
-        return dict(parse(line) for line in lines)
+        return dict(parse(line) for line in f.readlines())
 
 
 def run(filename, wire):
