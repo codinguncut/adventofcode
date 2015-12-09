@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+"""
+NOTE: python Pool.imap is broken and does not close properly
+"""
+
 import md5 # deprecated
 import re
 import itertools as it

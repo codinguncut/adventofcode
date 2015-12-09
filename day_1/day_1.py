@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 
-import sys
-
 def scan(f, it, state):
-  yield state 
   for x in it:
     state = f(state, x)
     yield state
@@ -16,7 +13,7 @@ def consume(level, paren):
 
 
 def levels(ops):
-    return list(scan(consume, ops, 0))
+    return [0] + list(scan(consume, ops, 0))
 
 
 def lastFloor(ops):

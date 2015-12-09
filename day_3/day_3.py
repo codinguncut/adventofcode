@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 def scan(f, it, state):
-  yield state 
   for x in it:
     state = f(state, x)
     yield state
@@ -27,7 +26,7 @@ def moveSanta(directions):
     >>> moveSanta('^v^v^v^v^v')
     set([(0, -1), (0, 0)])
     """
-    return set(scan(singleMove, directions, (0, 0)))
+    return set([(0, 0)] + list(scan(singleMove, directions, (0, 0))))
 
 
 def housesVisited(directions):
@@ -56,17 +55,13 @@ def alternating(directions):
     return len(moveSanta(santa) | moveSanta(robot))
 
 
-def readFile(filename):
-    with open(filename, 'r') as f:
-        return f.read()
-
-
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
 
-    directions = readFile('input.txt')
-    print 'santa', housesVisited(directions)
-    print 'alternating', alternating(directions)
+    with open('input.txt', 'r') as f:
+        directions = f.read()
+        print 'santa', housesVisited(directions)
+        print 'alternating', alternating(directions)
     
 

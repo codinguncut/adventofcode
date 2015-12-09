@@ -43,7 +43,6 @@ def readFile(filename):
         return list(line.strip() for line in f.readlines())
 
 
-
 if __name__ == "__main__":
     import doctest
     doctest.testmod()

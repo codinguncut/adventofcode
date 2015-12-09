@@ -61,7 +61,7 @@ def expression(lookup, parts):
     raise Exception('unknown expression' + str(parts))
 
     
-def fileToAssignments(filename):
+def fileToLookup(filename):
     with open(filename, 'r') as f:
         lines = f.readlines()
         return dict(parse(line) for line in lines)
@@ -72,12 +72,12 @@ def run(filename, wire):
     >>> run('test.txt', 'h')
     65412
     """
-    d = fileToAssignments(filename)
+    d = fileToLookup(filename)
     return expression(d, [wire])
 
 
 def run2(filename):
-    d = fileToAssignments(filename)
+    d = fileToLookup(filename)
     d['b'] = [run(filename, 'a')]
     return expression(d, ['a'])
 
