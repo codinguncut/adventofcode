@@ -25,7 +25,7 @@ def parse(string):
 def getLookup(strings):
     """
     >>> getLookup(['London to Dublin = 464'])
-    {('Dublin', 'London'): 464, ('London', 'Dublin'): 464}
+    {('London', 'Dublin'): 464, ('Dublin', 'London'): 464}
     """
     tups = [parse(s) for s in strings]
     ds = [[(tup, dist), (tuple(reversed(tup)), dist)] for (tup, dist) in tups]
@@ -34,7 +34,7 @@ def getLookup(strings):
 
 def segment(path):
     """
-    >>> segment((1, 2, 3, 4))
+    >>> list(segment((1, 2, 3, 4)))
     [(1, 2), (2, 3), (3, 4)]
     """
     return zip(path, path[1:])
@@ -46,11 +46,13 @@ def readFile(filename):
 
 
 # function object for Pool.map
+# TODO: use partial
 class CalcDist(object):
     def __init__(self, lookup):
         self.lookup = lookup
 
-    def __call__(self, (path, segs)):
+    def __call__(self, path_segs):
+        path, segs = path_segs
         return (path, sum(self.lookup[s] for s in segs))
 
 
@@ -76,6 +78,6 @@ if __name__ == "__main__":
     doctest.testmod()
 
     dists = distances(readFile('input.txt'))
-    print 'part 1:', min(d for _,d in dists)
-    print 'part 2:', max(d for _,d in dists)
+    print('part 1:', min(d for _,d in dists))
+    print('part 2:', max(d for _,d in dists))
 

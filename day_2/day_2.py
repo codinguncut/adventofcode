@@ -45,5 +45,5 @@ if __name__ == "__main__":
         dimensions = [parseDimensions(line) for line in f.readlines()]
         areas = [getSingleArea(*dim) for dim in dimensions]
         ribbons = [getRibbonLength(*dim) for dim in dimensions]
-        print 'paper:', sum(areas), 'ribbon:', sum(ribbons)
+        print('paper:', sum(areas), 'ribbon:', sum(ribbons))
 

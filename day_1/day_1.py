@@ -39,7 +39,7 @@ def enteringBasement(ops):
 
 with open('input.txt', 'r') as f:
     ops = f.read()
-    print 'final floor:', lastFloor(ops), ', entering basement:', enteringBasement(ops)
+    print('final floor:', lastFloor(ops), ', entering basement:', enteringBasement(ops))
 
 
 def correct():

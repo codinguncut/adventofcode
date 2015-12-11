@@ -8,6 +8,7 @@ I also implemented simple solution using "array", but that didn't help at all ;(
 from collections import defaultdict
 import re
 from array import array
+from functools import reduce
 
 # abstract
 class ChangeLights(object):
@@ -66,7 +67,7 @@ class MapGrid(object):
         return self.update(coords, lambda x: 1 if x == 0 else 0)
     
     def result(self):
-        return len(filter(lambda x: x==1, self.grid.values()))
+        return len(list(filter(lambda x: x==1, self.grid.values())))
 
 
 class MapGrid2(MapGrid):
@@ -144,6 +145,6 @@ if __name__ == "__main__":
     import doctest
     doctest.testmod()
 
-    print 'stage 1', run(MapGrid()).result()
-    print 'stage 2', run(MapGrid2()).result()
+    print('stage 1', run(MapGrid()).result())
+    print('stage 2', run(MapGrid2()).result())
 

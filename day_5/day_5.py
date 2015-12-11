@@ -50,7 +50,7 @@ if __name__ == "__main__":
     lines = readFile('input.txt')
 
     res = filter(isNiceString, lines)
-    print 'part 1', len(res)
+    print('part 1', len(list(res)))
 
     two = filter(isNewNice, lines)
-    print 'part 2', len(two)
+    print('part 2', len(list(two)))

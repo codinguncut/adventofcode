@@ -4,7 +4,8 @@
 NOTE: python Pool.imap is broken and does not close properly
 """
 
-import md5 # deprecated
+#import md5 # deprecated
+import hashlib
 import re
 import itertools as it
 from multiprocessing import Pool
@@ -39,7 +40,7 @@ def getMd5(string):
     >>> getMd5('pqrstuv1048970')[:11]
     '000006136ef'
     """
-    return md5.new(string).hexdigest()
+    return hashlib.md5(string.encode()).hexdigest()
 
 
 
@@ -60,9 +61,10 @@ def searchPostfix(prefix, zeroes=5):
     >>> searchPostfix('pqrstuv')
     1048970
     """
+    # TODO: use partial
     matches = imap(Matcher(prefix, zeroes), it.count())
-    filtered = it.ifilter(lambda (_, b): b, matches)
-    return filtered.next()[0]
+    filtered = (m for m in matches if m[1])
+    return next(filtered)[0]
 
 
 if __name__ == "__main__":
@@ -70,6 +72,6 @@ if __name__ == "__main__":
     doctest.testmod()
 
     prefix = 'iwrupvqb'
-    print '5 zeroes', searchPostfix(prefix, 5)
-    print '6 zeroes', searchPostfix(prefix, 6)
+    print('5 zeroes', searchPostfix(prefix, 5))
+    print('6 zeroes', searchPostfix(prefix, 6))
 

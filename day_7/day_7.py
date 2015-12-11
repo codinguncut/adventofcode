@@ -85,5 +85,5 @@ if __name__ == "__main__":
     import doctest
     doctest.testmod()
 
-    print 'part 1:', run('input.txt', 'a')
-    print 'part 2:', run2('input.txt')
+    print('part 1:', run('input.txt', 'a'))
+    print('part 2:', run2('input.txt'))

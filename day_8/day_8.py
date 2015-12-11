@@ -47,5 +47,5 @@ if __name__ == "__main__":
     import doctest
     doctest.testmod()
 
-    print 'part 1:', run(unescape, 'input.txt')
-    print 'part 2:', run(escape, 'input.txt')
+    print('part 1:', run(unescape, 'input.txt'))
+    print('part 2:', run(escape, 'input.txt'))
