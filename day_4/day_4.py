@@ -1,38 +1,12 @@
 #!/usr/bin/env python
 
-"""
-NOTE: python Pool.imap is broken and does not close properly
-"""
-
 #import md5 # deprecated
 import hashlib
 import re
 import itertools as it
-from multiprocessing import Pool
-
-# TODO: Pool.imap would be infinitely more elegant,
-#   but unfortunately it is very broken ;(
-def imap(func, iterable, chunksize=10000):
-    pool = Pool()
-
-    # had trouble using it.chain with infinite iterable ;(
-    def chain(gss):
-        for gs in gss:
-            for g in gs:
-                yield g
-
-    def helper():
-        while True:
-            seg = it.islice(iterable, chunksize)
-            yield pool.map(func, seg)
-
-    return chain(helper())
+from prelude import *
 
 
-###
-
-
-# deprecated, use hashlib
 def getMd5(string):
     """
     >>> getMd5('abcdef609043')[:11]
@@ -63,7 +37,7 @@ def searchPostfix(prefix, zeroes=5):
     """
     # TODO: use partial
     matches = imap(Matcher(prefix, zeroes), it.count())
-    filtered = (m for m in matches if m[1])
+    filtered = filter(lambda m: m[1], matches)
     return next(filtered)[0]
 
 

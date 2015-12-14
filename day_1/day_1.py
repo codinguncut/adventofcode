@@ -1,10 +1,7 @@
 #!/usr/bin/env python
 
-def scan(f, it, state):
-  for x in it:
-    state = f(state, x)
-    yield state
-
+from functools import reduce
+from prelude import *
 
 ###
 
@@ -16,7 +13,7 @@ def consume(level, paren):
 
 
 def levels(ops):
-    return [0] + list(scan(consume, ops, 0))
+    return list(scan(consume, ops, 0))
 
 
 def lastFloor(ops):
@@ -26,7 +23,7 @@ def lastFloor(ops):
     >>> lastFloor(')())())')
     -3
     """
-    return levels(ops)[-1]
+    return reduce(consume, ops, 0)
 
 
 def enteringBasement(ops):
@@ -37,16 +34,12 @@ def enteringBasement(ops):
     return levels(ops).index(-1)
 
 
-with open('input.txt', 'r') as f:
-    ops = f.read()
-    print('final floor:', lastFloor(ops), ', entering basement:', enteringBasement(ops))
-
 
 def correct():
     """
-    >>> lastFloor(ops)
+    >> lastFloor(ops)
     232
-    >>> enteringBasement(ops)
+    >> enteringBasement(ops)
     1783
     """
     pass
@@ -55,4 +48,9 @@ def correct():
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
+
+    with open('input.txt', 'r') as f:
+        ops = f.read()
+        print('final floor:', lastFloor(ops))
+        print('entering basement:', enteringBasement(ops))
 

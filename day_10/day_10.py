@@ -2,12 +2,7 @@
 
 import itertools as it
 from functools import reduce
-
-def ilen(xs):
-    return sum(1 for _ in xs)
-
-def take(n, xs):
-    return it.islice(xs, 1, n)
+from prelude import *
 
 def rle(string):
     """

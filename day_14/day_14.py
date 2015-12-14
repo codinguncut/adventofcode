@@ -2,24 +2,7 @@
 
 import itertools as it
 import operator
-
-def take(n, xs):
-    return it.islice(xs, n)
-
-
-def drop(n, xs):
-    return it.islice(xs, n, None)
-
-
-def nth(n, xs):
-    return next(drop(n-1, xs))
-
-
-def scan(f, it, state):
-  for x in it:
-    state = f(state, x)
-    yield state
-
+from prelude import *
 
 def isMax(seq):
     """
@@ -40,14 +23,14 @@ def enqueue(reindeer):
     """
     _, speed, running, resting = reindeer
     oneCycle = it.chain(it.repeat(speed, running), it.repeat(0, resting))
-    return scan(operator.add, it.cycle(oneCycle), 0)
+    return drop(1, scan(operator.add, it.cycle(oneCycle), 0))
 
     
 def accum(reindeers, n):
     """
     >>> rds = [('Comet', 14, 10, 127), ('Dancer', 16, 11, 162)]
     >>> list(accum(rds, 1000))
-    [313, 689]
+    [312, 689]
     """
     queues = [enqueue(r) for r in reindeers]
     winners = map(isMax, zip(*queues))

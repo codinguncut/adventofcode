@@ -1,19 +1,7 @@
 #!/usr/bin/env python
 
 import re
-import itertools as it
-
-def tail(xs):
-    return it.islice(xs, 1, None)
-
-def iterate(f, x):
-    s = x
-    while True:
-        s = f(s)
-        yield s
-
-
-###
+from prelude import *
 
 
 # using postfix to make it tail recursive
@@ -77,7 +65,7 @@ def nextPassword(string):
     >> next(nextPassword('ghijklmn'))
     'ghjaabcc'
     """
-    seq = iterate(incString, string) 
+    seq = drop(1, iterate(incString, string))
     passwords = filter(meetsReqs, seq)
     return next(passwords)
 

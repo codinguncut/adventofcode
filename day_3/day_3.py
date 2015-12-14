@@ -1,10 +1,6 @@
 #!/usr/bin/env python
 
-def scan(f, it, state):
-  for x in it:
-    state = f(state, x)
-    yield state
-
+from prelude import *
 
 ###
 
@@ -30,7 +26,7 @@ def moveSanta(directions):
     >>> moveSanta('^v^v^v^v^v')
     {(0, -1), (0, 0)}
     """
-    return set([(0, 0)] + list(scan(singleMove, directions, (0, 0))))
+    return set(scan(singleMove, directions, (0, 0)))
 
 
 def housesVisited(directions):
