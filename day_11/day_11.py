@@ -1,15 +1,19 @@
 #!/usr/bin/env python
 
-import re
-from prelude import *
+"""
+(c) Johannes Ahlmann, 2015-12, licensed CC0
+"""
 
+import doctest
+import re
+import prelude as p
 
 # using postfix to make it tail recursive
-def incString(string, postfix=''):
+def inc_string(string, postfix=''):
     """
-    >>> incString('xydzf')
+    >>> inc_string('xydzf')
     'xydzg'
-    >>> incString('azzz')
+    >>> inc_string('azzz')
     'baaa'
     """
     if not string:
@@ -20,60 +24,58 @@ def incString(string, postfix=''):
     nxt = ord(last) + 1
 
     if nxt > ord('z'):
-        return incString(rest, 'a' + postfix)
+        return inc_string(rest, 'a' + postfix)
     else:
         return rest + chr(nxt) + postfix
-
 
 def alpharange():
     return 'abcdefghijklmnopqrstuvwxyz'
 
+AR = alpharange()
+RE_TRIPLES = re.compile(
+    '|'.join(a+b+c for a, b, c in
+             zip(AR, p.tail(AR), p.tail(p.tail(AR)))))
+RE_FORBIDDEN = re.compile(r'i|o|l')
+RE_DOUBLES = re.compile(r'(?P<letter1>\w)(?P=letter1).*?(?P<letter2>\w)(?P=letter2)')
 
-ar = alpharange()
-reTriples = re.compile('|'.join(a+b+c for a,b,c in zip(ar, tail(ar), tail(tail(ar)))))
-reForbidden = re.compile(r'i|o|l')
-reDoubles = re.compile(r'(?P<letter1>\w)(?P=letter1).*?(?P<letter2>\w)(?P=letter2)')
-
-
-def meetsReqs(string):
+def meets_reqs(string):
     """
-    >>> meetsReqs('hijklmmn')
+    >>> meets_reqs('hijklmmn')
     False
-    >>> meetsReqs('abbceffg')
+    >>> meets_reqs('abbceffg')
     False
-    >>> meetsReqs('abbcegjk')
+    >>> meets_reqs('abbcegjk')
     False
-    >>> meetsReqs('abcdefgj')
+    >>> meets_reqs('abcdefgj')
     False
-    >>> meetsReqs('abbcdeeg')
+    >>> meets_reqs('abbcdeeg')
     True
     """
-    if re.findall(reForbidden, string):
+    # 'search' faster than 'findall'?
+    if re.findall(RE_FORBIDDEN, string):
         return False
-    if not re.findall(reDoubles, string):
+    if not re.findall(RE_DOUBLES, string):
         return False
-    if not re.findall(reTriples, string):
+    if not re.findall(RE_TRIPLES, string):
         return False
     return True
 
-
-def nextPassword(string):
+def get_passwords(string):
     """
-    >>> nextPassword('abcdefgh')
+    >>> next(get_passwords('abcdefgh'))
     'abcdffaa'
 
-    >> next(nextPassword('ghijklmn'))
+    >> next(get_passwords('ghijklmn'))
     'ghjaabcc'
     """
-    seq = drop(1, iterate(incString, string))
-    passwords = filter(meetsReqs, seq)
-    return next(passwords)
-
+    seq = p.drop(1, p.iterate(inc_string, string))
+    passwords = filter(meets_reqs, seq)
+    return passwords
 
 if __name__ == "__main__":
-    import doctest
     doctest.testmod()
 
-    nxt = nextPassword('hepxcrrq')
-    print(nxt)
-    print(nextPassword(nxt))
+    PASSWORDS = get_passwords('hepxcrrq')
+    print(next(PASSWORDS))
+    print(next(PASSWORDS))
+

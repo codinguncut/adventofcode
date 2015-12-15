@@ -1,45 +1,44 @@
 #!/usr/bin/env python
 
-from prelude import *
+"""
+(c) Johannes Ahlmann, 2015-12, CC0
+"""
 
-###
+import doctest
+import prelude as p
 
-
-def singleMove(xy, char):
+def single_move(x_y, char):
     """
     evaluate single move
-    >>> singleMove((1, 2), '>')
+    >>> single_move((1, 2), '>')
     (2, 2)
     """
-    x, y = xy
-    dirs = {'>': (x+1,  y),
-            '<': (x-1,  y),
-            '^': (x,    y-1),
-            'v': (x,    y+1)}
+    x, y = x_y
+    dirs = {'>': (x+1, y),
+            '<': (x-1, y),
+            '^': (x, y-1),
+            'v': (x, y+1)}
     return dirs[char]
 
-
-def moveSanta(directions):
+def move_santa(directions):
     """
-    >>> moveSanta('>')
+    >>> move_santa('>')
     {(1, 0), (0, 0)}
-    >>> moveSanta('^v^v^v^v^v')
+    >>> move_santa('^v^v^v^v^v')
     {(0, -1), (0, 0)}
     """
-    return set(scan(singleMove, directions, (0, 0)))
+    return set(p.scan(single_move, directions, (0, 0)))
 
-
-def housesVisited(directions):
+def houses_visited(directions):
     """
-    >>> housesVisited('>')
+    >>> houses_visited('>')
     2
-    >>> housesVisited('^>v<')
+    >>> houses_visited('^>v<')
     4
-    >>> housesVisited('^v^v^v^v^v')
+    >>> houses_visited('^v^v^v^v^v')
     2
     """
-    return len(moveSanta(directions))
-
+    return len(move_santa(directions))
 
 def alternating(directions):
     """
@@ -52,16 +51,14 @@ def alternating(directions):
     """
     santa = directions[0::2]
     robot = directions[1::2]
-    return len(moveSanta(santa) | moveSanta(robot))
+    return len(move_santa(santa) | move_santa(robot))
 
+def run(directions):
+    print('santa', houses_visited(directions))
+    print('alternating', alternating(directions))
 
 if __name__ == "__main__":
-    import doctest
     doctest.testmod()
 
     with open('input.txt', 'r') as f:
-        directions = f.read()
-        print('santa', housesVisited(directions))
-        print('alternating', alternating(directions))
-    
-
+        run(f.read())

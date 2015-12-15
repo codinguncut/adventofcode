@@ -4,97 +4,112 @@
 Python functional tools inspired by Haskell Prelude
 """
 
+import doctest
 import itertools as it
-from multiprocessing import Pool
 import operator
+from multiprocessing import Pool
 import functools as ft
 
-
-def take(n, xs):
+def take(num, seq):
     """
     >>> list(take(5, it.count(1)))
     [1, 2, 3, 4, 5]
     """
-    return it.islice(xs, n)
+    return it.islice(seq, num)
 
-
-def drop(n, xs):
+def drop(num, seq):
     """
     >>> list(drop(5, range(1, 8)))
     [6, 7]
     """
-    return it.islice(xs, n, None)
+    return it.islice(seq, num, None)
 
+def tail(seq):
+    """
+    >>> list(tail(range(5)))
+    [1, 2, 3, 4]
+    """
+    return it.islice(seq, 1, None)
 
-def tail(xs):
-    return it.islice(xs, 1, None)
-
-
-def nth(n, xs):
+def nth(num, seq):
     """
     >>> nth(5, it.count(1))
     5
     """
-    return next(drop(n-1, xs))
+    return next(drop(num-1, seq))
 
+def last(seq):
+    """
+    >>> last(range(5))
+    4
+    """
+    return ft.reduce(lambda _, x: x, seq)
 
-def last(xs):
-    return ft.reduce(lambda _,x: x, xs)
+def product(seq):
+    """
+    >>> product(range(1, 5))
+    24
+    """
+    return ft.reduce(operator.mul, seq, 1)
 
-def scan(f, it, state):
+def scan(func, seq, state):
     """
     >>> list(scan(lambda x,y: x+y, [1,2,3], 0))
     [0, 1, 3, 6]
     """
     yield state
-    for x in it:
-        state = f(state, x)
+    for elt in seq:
+        state = func(state, elt)
         yield state
 
-
-def ilen(xs):
+def ilen(seq):
     """
     >>> ilen(range(5))
     5
     """
-    return sum(1 for _ in xs)
+    return sum(1 for _ in seq)
 
-
-def iterate(f, x):
+def iterate(func, init_state):
     """
     >>> list(take(5, iterate(lambda x: x*2, 1)))
     [1, 2, 4, 8, 16]
     """
-    s = x
-    yield s
+    state = init_state
+    yield state
     while True:
-        s = f(s)
-        yield s
+        state = func(state)
+        yield state
 
-
-def concat(xs):
+def concat(seq):
     """
     >>> concat([[1, 2], [3, 4]])
     [1, 2, 3, 4]
     """
-    return sum(xs, [])
+    return sum(seq, [])
 
-
-def const(x):
+def const(val):
     """
     >>> const(42)(113123)
     42
     """
-    return lambda _: x
+    return lambda _: val
 
-
-def zipWith(f, *parts):
+def zipwith(func, *parts):
     """
-    >>> list(zipWith(operator.add, [1,2,3], [4,5,6]))
+    >>> list(zipwith(operator.add, [1,2,3], [4,5,6]))
     [5, 7, 9]
     """
-    return map(lambda x: f(*x), zip(*parts))
+    return (func(*x) for x in zip(*parts))
 
+def iindex(iterable, search_elt):
+    """
+    >>> iindex(range(10), 8)
+    8
+    """
+    for i, elt in enumerate(iterable):
+        if elt == search_elt:
+            return i
+    return -1
 
 """
 fold*, unfold
@@ -106,9 +121,7 @@ transpose
 curry, uncurry
 """
 
-
 ###
-
 
 # source: http://stackoverflow.com/questions/24527006
 def chunks(iterable, size):
@@ -120,28 +133,34 @@ def chunks(iterable, size):
     for first in iterator:
         yield it.chain([first], it.islice(iterator, size - 1))
 
-
-# TODO: Pool.imap would be more elegant, but unfortunately it is very broken ;(
-def imap(func, iterable, chunksize=10000):
+def parfilter(pred, iterable, chunksize=10000):
     """
-    >>> list(imap(ft.partial(operator.add, 1), range(5)))
+    pred has to be a picklable function (i.e. globally defined non-closure)
+    >>> list(parfilter(ft.partial(operator.lt, 3), range(10)))
+    [4, 5, 6, 7, 8, 9]
+    """
+    it1, it2 = it.tee(iterable)
+    return (x for x, y in zip(it1, parmap(pred, it2, chunksize)) if y)
+
+# NOTE: Pool.imap would be more elegant, but unfortunately it is very broken ;(
+def parmap(func, iterable, chunksize=10000):
+    """
+    >>> list(parmap(ft.partial(operator.add, 1), range(5)))
     [1, 2, 3, 4, 5]
     """
     pool = Pool()
 
     # had trouble using it.chain with infinite iterable ;(
     def chainss(gss):
-        for gs in gss:
-            for g in gs:
-                yield g
+        for it_outer in gss:
+            for it_inner in it_outer:
+                yield it_inner
 
     def helper():
-        for chunk in chunks(iterable, chunksize): 
+        for chunk in chunks(iterable, chunksize):
             yield pool.map(func, chunk)
 
     return chainss(helper())
 
-
 if __name__ == "__main__":
-    import doctest
     doctest.testmod()

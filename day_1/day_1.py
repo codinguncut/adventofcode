@@ -1,56 +1,53 @@
 #!/usr/bin/env python
 
+"""
+(c) Johannes Ahlmann, 2015-12, licensed CC0
+"""
+
+import doctest
 from functools import reduce
-from prelude import *
-
-###
-
+import prelude as p
 
 def consume(level, paren):
-    ops = { '(': 1,
-            ')': -1}
+    """
+    >>> consume(0, '(')
+    1
+    """
+    ops = {'(': 1,
+           ')': -1}
     return level + ops[paren]
 
-
-def levels(ops):
-    return list(scan(consume, ops, 0))
-
-
-def lastFloor(ops):
+def last_floor(ops):
     """
-    >>> lastFloor('(()(()(')
+    >>> last_floor('(()(()(')
     3
-    >>> lastFloor(')())())')
+    >>> last_floor(')())())')
     -3
     """
     return reduce(consume, ops, 0)
 
-
-def enteringBasement(ops):
+def entering_basement(ops):
     """
-    >>> enteringBasement('()())')
+    >>> entering_basement('()())')
     5
     """
-    return levels(ops).index(-1)
-
-
+    levels = p.scan(consume, ops, 0)
+    return p.iindex(levels, -1)
 
 def correct():
     """
-    >> lastFloor(ops)
+    >> last_floor(ops)
     232
-    >> enteringBasement(ops)
+    >> entering_basement(ops)
     1783
     """
     pass
 
-
 if __name__ == "__main__":
-    import doctest
     doctest.testmod()
 
     with open('input.txt', 'r') as f:
-        ops = f.read()
-        print('final floor:', lastFloor(ops))
-        print('entering basement:', enteringBasement(ops))
+        OPS = f.read()
+        print('final floor:', last_floor(OPS))
+        print('entering basement:', entering_basement(OPS))
 

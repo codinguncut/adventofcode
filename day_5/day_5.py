@@ -1,56 +1,61 @@
 #!/usr/bin/env python
 
+"""
+(c) Johannes Ahlmann, 2015-12, licensed CC0
+"""
+
+import doctest
 import re
-import sys
+import prelude as p
 
-def isNiceString(string):
+def is_nice_string(string):
     """
-    >>> isNiceString('ugknbfddgicrmopn')
+    >>> is_nice_string('ugknbfddgicrmopn')
     True
-    >>> isNiceString('aaa')
+    >>> is_nice_string('aaa')
     True
-    >>> isNiceString('jchzalrnumimnmhp') # no double letter
+    >>> is_nice_string('jchzalrnumimnmhp') # no double letter
     False
-    >>> isNiceString('haegwjzuvuyypxyu') # contains 'xy'
+    >>> is_nice_string('haegwjzuvuyypxyu') # contains 'xy'
     False
-    >>> isNiceString('dvszwmarrgswjxmb') # only one vowel
+    >>> is_nice_string('dvszwmarrgswjxmb') # only one vowel
     False
     """
+    # TODO: something faster than findall? compile rexes?
     vowels = re.findall(r'[aeiou]', string)
-    doubleLetter = re.findall(r'(?P<letter>\w)(?P=letter)', string)
+    double_letter = re.findall(r'(?P<letter>\w)(?P=letter)', string)
     forbidden = re.findall(r'ab|cd|pq|xy', string)
-    return len(vowels) >= 3 and bool(doubleLetter) and not bool(forbidden)
+    return len(vowels) >= 3 and bool(double_letter) and not bool(forbidden)
 
-
-def isNewNice(string):
+def is_new_nice(string):
     """
-    >>> isNewNice('qjhvhtzxzqqjkmpb')
+    >>> is_new_nice('qjhvhtzxzqqjkmpb')
     True
-    >>> isNewNice('xxyxx')
+    >>> is_new_nice('xxyxx')
     True
-    >>> isNewNice('uurcxstgmygtbstg')
+    >>> is_new_nice('uurcxstgmygtbstg')
     False
-    >>> isNewNice('ieodomkazucvgmuy')
+    >>> is_new_nice('ieodomkazucvgmuy')
     False
     """
-    repeatingPairs = re.findall(r'(?P<pair>\w\w).*(?P=pair)', string)
-    repeatingLetter = re.findall(r'(?P<letter>\w)\w(?P=letter)', string)
-    return bool(repeatingPairs) and bool(repeatingLetter)
+    repeating_pairs = re.findall(r'(?P<pair>\w\w).*(?P=pair)', string)
+    repeating_letter = re.findall(r'(?P<letter>\w)\w(?P=letter)', string)
+    return bool(repeating_pairs) and bool(repeating_letter)
 
+def read_file(filename):
+    with open(filename, 'r') as inp:
+        return list(line.strip() for line in inp.readlines())
 
-def readFile(filename):
-    with open(filename, 'r') as f:
-        return list(line.strip() for line in f.readlines())
+def run():
+    lines = read_file('input.txt')
 
+    one = filter(is_nice_string, lines)
+    print('part 1', p.ilen(one))
+
+    two = filter(is_new_nice, lines)
+    print('part 2', p.ilen(two))
 
 if __name__ == "__main__":
-    import doctest
     doctest.testmod()
 
-    lines = readFile('input.txt')
-
-    res = filter(isNiceString, lines)
-    print('part 1', len(list(res)))
-
-    two = filter(isNewNice, lines)
-    print('part 2', len(list(two)))
+    run()

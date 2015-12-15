@@ -5,9 +5,9 @@ this solution is very slow, due to the poor data types available in python.
 I also implemented simple solution using "array", but that didn't help at all ;(
 """
 
+import doctest
 from collections import defaultdict
 import re
-from array import array
 from functools import reduce
 
 # abstract
@@ -23,7 +23,7 @@ class ChangeLights(object):
         for x in range(self.left, self.right+1):
             for y in range(self.top, self.bottom+1):
                 yield (x, y)
-    
+
     def op(self, grid):
         return grid
 
@@ -65,9 +65,9 @@ class MapGrid(object):
 
     def toggle(self, coords):
         return self.update(coords, lambda x: 1 if x == 0 else 0)
-    
+
     def result(self):
-        return len(list(filter(lambda x: x==1, self.grid.values())))
+        return len(list(x for x in self.grid.values() if x == 1))
 
 
 class MapGrid2(MapGrid):
@@ -106,43 +106,42 @@ def evaluate(grid, changeLights):
 def parse(line):
     """
     >>> x = parse('turn on 0,0 through 999,999')
-    >>> type(x).__name__ 
+    >>> type(x).__name__
     'TurnOn'
     >>> len(list(x.coords()))
     1000000
 
     >>> x = parse('toggle 0,0 through 999,0')
-    >>> type(x).__name__ 
+    >>> type(x).__name__
     'Toggle'
     >>> len(list(x.coords()))
     1000
 
     >>> x = parse('turn off 499,499 through 500,500')
-    >>> type(x).__name__ 
+    >>> type(x).__name__
     'TurnOff'
     >>> len(list(x.coords()))
     4
     """
-    rex = re.compile( r'(turn on|turn off|toggle) (\d+),(\d+) through (\d+),(\d+)')
+    rex = re.compile(r'(turn on|turn off|toggle) (\d+),(\d+) through (\d+),(\d+)')
     ops = list(rex.match(line).groups())
     conversions = [lambda x: x, int, int, int, int]
     op, left, top, right, bottom = [f(x) for (f, x) in zip(conversions, ops)]
 
-    classes = { 'turn on':  TurnOn,
-                'turn off': TurnOff,
-                'toggle':   Toggle}
+    classes = {'turn on':  TurnOn,
+               'turn off': TurnOff,
+               'toggle':   Toggle}
     return (classes[op])(left, top, right, bottom)
 
 
 def run(grid):
-    with open('input.txt') as f:
-        rects = [parse(line) for line in f.readlines()]
+    with open('input.txt') as inp:
+        rects = [parse(line) for line in inp.readlines()]
         res = reduce(evaluate, rects, grid)
         return res
 
 
 if __name__ == "__main__":
-    import doctest
     doctest.testmod()
 
     print('stage 1', run(MapGrid()).result())

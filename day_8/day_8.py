@@ -1,8 +1,12 @@
 #!/usr/bin/env python
 
+"""
+(c) Johannes Ahlmann, 2015-12, licensed CC0
+"""
+
+import doctest
 import ast
 import re
-
 
 def unescape(string):
     """
@@ -16,7 +20,6 @@ def unescape(string):
     # supposedly safe ;)
     return ast.literal_eval(string)
 
-
 def escape(string):
     """
     >>> len(escape(r'''""'''))
@@ -28,7 +31,6 @@ def escape(string):
     """
     return '"' + re.escape(string) + '"'
 
-
 def run(func, filename):
     """
     >>> run(unescape, 'test.txt')
@@ -36,15 +38,13 @@ def run(func, filename):
     >>> run(escape, 'test.txt')
     19
     """
-    with open(filename, 'r') as f:
-        lines = [line.strip() for line in f.readlines()]
+    with open(filename, 'r') as fil:
+        lines = [line.strip() for line in fil.readlines()]
         raw = sum(len(s) for s in lines)
         res = sum(len(func(s)) for s in lines)
         return abs(raw - res)
 
-
 if __name__ == "__main__":
-    import doctest
     doctest.testmod()
 
     print('part 1:', run(unescape, 'input.txt'))
