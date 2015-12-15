@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 """
-Python functional tools inspired by Haskell Prelude
+Python functional tools inspired by Haskell Prelude.
+Also compare "https://docs.python.org/3/library/itertools.html#itertools-recipes"
 """
 
 import doctest
@@ -119,6 +120,7 @@ List.tails, inits
 intersperse
 transpose
 curry, uncurry
+pairwise
 """
 
 ###
@@ -126,7 +128,7 @@ curry, uncurry
 # source: http://stackoverflow.com/questions/24527006
 def chunks(iterable, size):
     """
-    >>> list(list(c) for c in chunks(range(10), 3))
+    >>> [list(c) for c in chunks(range(10), 3)]
     [[0, 1, 2], [3, 4, 5], [6, 7, 8], [9]]
     """
     iterator = iter(iterable)
@@ -150,17 +152,11 @@ def parmap(func, iterable, chunksize=10000):
     """
     pool = Pool()
 
-    # had trouble using it.chain with infinite iterable ;(
-    def chainss(gss):
-        for it_outer in gss:
-            for it_inner in it_outer:
-                yield it_inner
-
     def helper():
         for chunk in chunks(iterable, chunksize):
             yield pool.map(func, chunk)
 
-    return chainss(helper())
+    return it.chain.from_iterable(helper())
 
 if __name__ == "__main__":
     doctest.testmod()
